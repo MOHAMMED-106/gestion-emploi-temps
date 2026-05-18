@@ -1,8 +1,10 @@
+import React from "react";
 import { Link, usePage } from "@inertiajs/react";
 
 const NAV = [
     {
-        href: "dashboard",
+        href: "/dashboard",
+        routeName: "dashboard",
         label: "Tableau de bord",
         icon: (
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -11,7 +13,8 @@ const NAV = [
         ),
     },
     {
-        href: "schedule.index",
+        href: "/schedules",
+        routeName: "schedules.index",
         label: "Mon planning",
         icon: (
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -20,7 +23,8 @@ const NAV = [
         ),
     },
     {
-        href: "fixed-events.index",
+        href: "/fixed-events",
+        routeName: "fixed-events.index",
         label: "Tâches fixes",
         icon: (
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -29,7 +33,8 @@ const NAV = [
         ),
     },
     {
-        href: "preferences.edit",
+        href: "/preferences",
+        routeName: "preferences.edit",
         label: "Préférences",
         icon: (
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -38,7 +43,8 @@ const NAV = [
         ),
     },
     {
-        href: "export.index",
+        href: "/profile",
+        routeName: "profile.edit",
         label: "Exporter",
         icon: (
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -53,14 +59,18 @@ export default function AppLayout({ children }) {
     const user = props.auth?.user;
     const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
-    function isActive(routeName) {
-        try { return route().current(routeName); } catch { return false; }
+    function isActive(href) {
+        return url === href || url.startsWith(href + '/');
     }
 
     return (
         <div style={s.root}>
-            {/* ── Sidebar ── */}
-            <aside style={{ ...s.sidebar, transform: sidebarOpen ? "translateX(0)" : undefined }}>
+            {/* Sidebar */}
+            <aside style={{
+                ...s.sidebar,
+                transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+                position: sidebarOpen ? "fixed" : "sticky",
+            }}>
                 {/* Logo */}
                 <div style={s.logo}>
                     <div style={s.logoIcon}>
@@ -78,12 +88,13 @@ export default function AppLayout({ children }) {
                         const active = isActive(item.href);
                         return (
                             <Link
-                                key={''}
-                                href={""}
+                                key={item.href}
+                                href={item.href}
                                 style={{
                                     ...s.navLink,
                                     ...(active ? s.navLinkActive : {}),
                                 }}
+                                onClick={() => setSidebarOpen(false)}
                             >
                                 <span style={{ ...s.navIcon, color: active ? "#6366F1" : "#9CA3AF" }}>
                                     {item.icon}
@@ -97,7 +108,7 @@ export default function AppLayout({ children }) {
 
                 {/* Generate CTA */}
                 <div style={s.sidebarCta}>
-                    <Link href={""} style={s.ctaBtn}>
+                    <Link href="/schedules" style={s.ctaBtn}>
                         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
@@ -114,7 +125,7 @@ export default function AppLayout({ children }) {
                         <span style={s.userName}>{user?.name || "Utilisateur"}</span>
                         <span style={s.userEmail}>{user?.email || ""}</span>
                     </div>
-                    <Link href={""} style={s.userSettings} title="Profil">
+                    <Link href="/profile" style={s.userSettings} title="Profil">
                         <svg width="15" height="15" fill="none" stroke="#9CA3AF" strokeWidth="1.8" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -123,15 +134,73 @@ export default function AppLayout({ children }) {
                 </div>
             </aside>
 
-            {/* ── Mobile overlay ── */}
+            {/* Desktop sidebar (always visible) */}
+            <aside style={s.sidebarDesktop}>
+                {/* Logo */}
+                <div style={s.logo}>
+                    <div style={s.logoIcon}>
+                        <svg width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <span style={s.logoText}>SmartPlanner</span>
+                </div>
+
+                <nav style={s.nav}>
+                    <p style={s.navSection}>Navigation</p>
+                    {NAV.map((item) => {
+                        const active = isActive(item.href);
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                style={{
+                                    ...s.navLink,
+                                    ...(active ? s.navLinkActive : {}),
+                                }}
+                            >
+                                <span style={{ ...s.navIcon, color: active ? "#6366F1" : "#9CA3AF" }}>
+                                    {item.icon}
+                                </span>
+                                {item.label}
+                                {active && <span style={s.navActiveDot} />}
+                            </Link>
+                        );
+                    })}
+                </nav>
+
+                <div style={s.sidebarCta}>
+                    <Link href="/schedules" style={s.ctaBtn}>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Générer le planning
+                    </Link>
+                </div>
+
+                <div style={s.userBar}>
+                    <div style={s.userAvatar}>
+                        {user?.name?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                    <div style={s.userInfo}>
+                        <span style={s.userName}>{user?.name || "Utilisateur"}</span>
+                        <span style={s.userEmail}>{user?.email || ""}</span>
+                    </div>
+                    <Link href="/profile" style={s.userSettings} title="Profil">
+                        <svg width="15" height="15" fill="none" stroke="#9CA3AF" strokeWidth="1.8" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </Link>
+                </div>
+            </aside>
+
+            {/* Mobile overlay */}
             {sidebarOpen && (
-                <div
-                    style={s.overlay}
-                    onClick={() => setSidebarOpen(false)}
-                />
+                <div style={s.overlay} onClick={() => setSidebarOpen(false)} />
             )}
 
-            {/* ── Main ── */}
+            {/* Main */}
             <main style={s.main}>
                 {/* Mobile topbar */}
                 <div style={s.mobileBar}>
@@ -149,8 +218,6 @@ export default function AppLayout({ children }) {
     );
 }
 
-import React from "react";
-
 const s = {
     root: {
         display: "flex",
@@ -165,18 +232,25 @@ const s = {
         borderRight: "1px solid #F3F4F6",
         display: "flex",
         flexDirection: "column",
+        top: 0,
+        left: 0,
+        height: "100vh",
+        overflowY: "auto",
+        zIndex: 40,
+        transition: "transform 0.25s ease",
+    },
+    sidebarDesktop: {
+        width: "240px",
+        flexShrink: 0,
+        background: "#fff",
+        borderRight: "1px solid #F3F4F6",
+        display: "flex",
+        flexDirection: "column",
         position: "sticky",
         top: 0,
         height: "100vh",
         overflowY: "auto",
         zIndex: 30,
-        "@media(max-width:768px)": {
-            position: "fixed",
-            left: 0,
-            top: 0,
-            transform: "translateX(-100%)",
-            transition: "transform 0.25s ease",
-        },
     },
     logo: {
         display: "flex",
@@ -322,7 +396,7 @@ const s = {
         position: "fixed",
         inset: 0,
         background: "rgba(0,0,0,0.3)",
-        zIndex: 20,
+        zIndex: 35,
     },
     main: {
         flex: 1,
@@ -331,7 +405,7 @@ const s = {
         flexDirection: "column",
     },
     mobileBar: {
-        display: "none",
+        display: "flex",
         alignItems: "center",
         gap: "12px",
         padding: "14px 16px",
@@ -340,7 +414,6 @@ const s = {
         position: "sticky",
         top: 0,
         zIndex: 10,
-        "@media(max-width:768px)": { display: "flex" },
     },
     menuBtn: {
         background: "none",
