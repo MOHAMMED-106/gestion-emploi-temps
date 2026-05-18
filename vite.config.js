@@ -10,4 +10,17 @@ export default defineConfig({
         }),
         react(),
     ],
+    server: {
+        https: false,
+        host: 'localhost',
+        port: 5173,
+        cors: true,
+        proxy: {
+            // Forward all requests not matching static assets to Laravel
+            '^(?!/@vite|/resources|/node_modules|/@react-refresh).*': {
+                target: 'http://localhost:8000',
+                changeOrigin: true,
+            },
+        },
+    },
 });
