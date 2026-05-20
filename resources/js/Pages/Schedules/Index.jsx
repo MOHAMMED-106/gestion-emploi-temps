@@ -22,9 +22,9 @@ export default function SchedulesIndex({ schedules, activeSchedule }) {
     };
 
     const typeConfig = {
-        intensif:  { label: 'Intensif',  color: '#EF4444', bg: '#FEF2F2', icon: '🔥', desc: '2h/session · 4 sessions/jour max' },
-        equilibre: { label: 'Équilibré', color: '#10B981', bg: '#ECFDF5', icon: '⚖️', desc: '1h/session · 3 sessions/jour max' },
-        leger:     { label: 'Léger',     color: '#3B82F6', bg: '#EFF6FF', icon: '🍃', desc: '30min/session · 2 sessions/jour max' },
+        intensif:  { label: 'Intensif',   color: '#EF4444', bg: '#FEF2F2', icon: '🔥', desc: '2h/session · 4 sessions/jour max' },
+        equilibre: { label: 'Équilibré',  color: '#10B981', bg: '#ECFDF5', icon: '⚖️', desc: '1h/session · 3 sessions/jour max' },
+        leger:     { label: 'Léger',      color: '#3B82F6', bg: '#EFF6FF', icon: '🍃', desc: '30min/session · 2 sessions/jour max' },
     };
 
     const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
@@ -41,15 +41,35 @@ export default function SchedulesIndex({ schedules, activeSchedule }) {
                         <p style={s.subtitle}>Générez et activez votre planning personnalisé par IA</p>
                     </div>
                     <button onClick={handleGenerate} style={s.generateBtn} disabled={processing}>
-                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                        {processing ? 'Génération...' : 'Générer les plannings'}
+                        {processing ? (
+                            <>
+                                <Spinner />
+                                Génération en cours...
+                            </>
+                        ) : (
+                            <>
+                                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                Générer les plannings
+                            </>
+                        )}
                     </button>
                 </div>
 
-                {/* Pas de plannings */}
-                {(!schedules || schedules.length === 0) && (
+                {/* Loading overlay */}
+                {processing && (
+                    <div style={s.loadingBanner}>
+                        <Spinner color="#4F46E5" />
+                        <div>
+                            <p style={s.loadingTitle}>L'IA génère vos plannings...</p>
+                            <p style={s.loadingSub}>Analyse de vos cours et préférences en cours</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Empty state */}
+                {(!schedules || schedules.length === 0) && !processing && (
                     <div style={s.emptyCard}>
                         <div style={s.emptyIcon}>📅</div>
                         <p style={s.emptyTitle}>Aucun planning généré</p>
@@ -60,7 +80,7 @@ export default function SchedulesIndex({ schedules, activeSchedule }) {
                     </div>
                 )}
 
-                {/* Grille des 3 plannings */}
+                {/* Grid */}
                 {schedules && schedules.length > 0 && (
                     <div style={s.grid}>
                         {schedules.map(plan => {
@@ -106,7 +126,7 @@ export default function SchedulesIndex({ schedules, activeSchedule }) {
                                         </div>
                                     )}
 
-                                    {/* Détail par jour (expandable) */}
+                                    {/* Détail expandable */}
                                     <div style={s.cardBody}>
                                         <button
                                             style={s.expandBtn}
@@ -174,6 +194,21 @@ export default function SchedulesIndex({ schedules, activeSchedule }) {
     );
 }
 
+// ── Spinner component ──────────────────────────────────────
+function Spinner({ color = "#fff", size = 14 }) {
+    return (
+        <svg
+            width={size} height={size}
+            viewBox="0 0 24 24" fill="none"
+            stroke={color} strokeWidth="2.5"
+            style={{ animation: "spin 0.8s linear infinite", flexShrink: 0 }}
+        >
+            <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+            <path strokeLinecap="round" d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+    );
+}
+
 const s = {
     page: { padding: '32px', maxWidth: '1100px' },
     header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' },
@@ -185,8 +220,17 @@ const s = {
         background: '#4F46E5', color: '#fff',
         border: 'none', borderRadius: '10px',
         fontSize: '13px', fontWeight: 600,
-        cursor: 'pointer',
+        cursor: 'pointer', opacity: 1,
+        transition: 'opacity 0.2s',
     },
+    loadingBanner: {
+        display: 'flex', alignItems: 'center', gap: '14px',
+        background: '#EEF2FF', border: '1px solid #C7D2FE',
+        borderRadius: '12px', padding: '16px 20px',
+        marginBottom: '24px',
+    },
+    loadingTitle: { fontSize: '14px', fontWeight: 600, color: '#3730A3', margin: '0 0 2px' },
+    loadingSub: { fontSize: '12px', color: '#6366F1', margin: 0 },
     emptyCard: {
         background: '#fff', border: '1px solid #F3F4F6', borderRadius: '16px',
         padding: '60px 32px', textAlign: 'center',
@@ -196,67 +240,28 @@ const s = {
     emptyTitle: { fontSize: '16px', fontWeight: 600, color: '#111827', margin: 0 },
     emptyText: { fontSize: '13px', color: '#9CA3AF', margin: 0, maxWidth: '320px' },
     grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' },
-    card: {
-        background: '#fff', border: '1px solid #F3F4F6',
-        borderRadius: '14px', overflow: 'hidden',
-        display: 'flex', flexDirection: 'column',
-    },
+    card: { background: '#fff', border: '1px solid #F3F4F6', borderRadius: '14px', overflow: 'hidden', display: 'flex', flexDirection: 'column' },
     cardTop: { padding: '16px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
     cardTopLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
     cardIcon: { fontSize: '22px' },
     cardLabel: { fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' },
     cardDesc: { fontSize: '12px', color: '#9CA3AF', marginTop: '2px' },
-    activeBadge: {
-        fontSize: '10px', fontWeight: 700, color: '#fff',
-        padding: '2px 8px', borderRadius: '20px',
-    },
-    resumeRow: {
-        display: 'flex', gap: '0',
-        borderTop: '1px solid #F3F4F6', borderBottom: '1px solid #F3F4F6',
-    },
-    resumeStat: {
-        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-        padding: '10px 0', borderRight: '1px solid #F3F4F6',
-    },
+    activeBadge: { fontSize: '10px', fontWeight: 700, color: '#fff', padding: '2px 8px', borderRadius: '20px' },
+    resumeRow: { display: 'flex', borderTop: '1px solid #F3F4F6', borderBottom: '1px solid #F3F4F6' },
+    resumeStat: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 0', borderRight: '1px solid #F3F4F6' },
     resumeVal: { fontSize: '16px', fontWeight: 700, color: '#111827' },
     resumeKey: { fontSize: '11px', color: '#9CA3AF' },
     cardBody: { padding: '14px 18px', flex: 1 },
-    expandBtn: {
-        display: 'flex', alignItems: 'center', gap: '6px',
-        background: 'none', border: '1px solid #E5E7EB',
-        borderRadius: '8px', padding: '7px 12px',
-        fontSize: '12px', color: '#6B7280', cursor: 'pointer',
-        width: '100%', justifyContent: 'center',
-    },
+    expandBtn: { display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: '1px solid #E5E7EB', borderRadius: '8px', padding: '7px 12px', fontSize: '12px', color: '#6B7280', cursor: 'pointer', width: '100%', justifyContent: 'center' },
     dayList: { marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' },
     dayRow: { display: 'flex', gap: '10px', alignItems: 'flex-start' },
-    dayName: {
-        fontSize: '12px', fontWeight: 700, color: '#374151',
-        minWidth: '64px', paddingTop: '4px',
-    },
+    dayName: { fontSize: '12px', fontWeight: 700, color: '#374151', minWidth: '64px', paddingTop: '4px' },
     dayContent: { display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 },
-    coursTag: {
-        fontSize: '11px', background: '#F3F4F6', color: '#374151',
-        padding: '3px 8px', borderRadius: '6px',
-    },
-    sessionTag: {
-        fontSize: '11px', padding: '3px 8px', borderRadius: '6px', fontWeight: 500,
-    },
+    coursTag: { fontSize: '11px', background: '#F3F4F6', color: '#374151', padding: '3px 8px', borderRadius: '6px' },
+    sessionTag: { fontSize: '11px', padding: '3px 8px', borderRadius: '6px', fontWeight: 500 },
     noSession: { fontSize: '11px', color: '#D1D5DB' },
-    cardFooter: {
-        padding: '14px 18px', borderTop: '1px solid #F3F4F6',
-        display: 'flex', alignItems: 'center', gap: '10px',
-    },
-    activateBtn: {
-        flex: 1, padding: '9px', color: '#fff',
-        border: 'none', borderRadius: '8px',
-        fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-    },
+    cardFooter: { padding: '14px 18px', borderTop: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: '10px' },
+    activateBtn: { flex: 1, padding: '9px', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' },
     activeLabel: { flex: 1, fontSize: '13px', fontWeight: 600, textAlign: 'center' },
-    deleteBtn: {
-        padding: '9px 14px',
-        background: 'none', border: '1px solid #FCA5A5',
-        color: '#EF4444', borderRadius: '8px',
-        fontSize: '12px', cursor: 'pointer',
-    },
+    deleteBtn: { padding: '9px 14px', background: 'none', border: '1px solid #FCA5A5', color: '#EF4444', borderRadius: '8px', fontSize: '12px', cursor: 'pointer' },
 };
