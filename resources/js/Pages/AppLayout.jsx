@@ -110,7 +110,10 @@ export default function AppLayout({ children }) {
                 </p>
                 <div style={{ display:"flex", gap:"4px" }}>
                     {['fr','en','ar'].map(l => (
-                        <button key={l} onClick={() => setLang(l)} style={{ flex:1, padding:"5px 0", borderRadius:"7px", border:"none", cursor:"pointer", fontSize:"16px", transition:"all 0.15s", background: lang===l ? '#4F46E5' : tk.settingsBg }}>
+                        <button key={l} onClick={() => {
+                            setLang(l);
+                            setTimeout(() => router.reload(), 100);
+                        }} style={{ flex:1, padding:"5px 0", borderRadius:"7px", border:"none", cursor:"pointer", fontSize:"16px", transition:"all 0.15s", background: lang===l ? '#4F46E5' : tk.settingsBg }}>
                             {l==='fr' ? '🇫🇷' : l==='en' ? '🇬🇧' : '🇲🇦'}
                         </button>
                     ))}
@@ -197,7 +200,8 @@ export default function AppLayout({ children }) {
                             <LogoutBtn />
                         </div>
                     </div>
-                    <div style={{ flex:1 }}>{children}</div>
+                    {/* FIX: Add key={lang} here to force page re‑mount when language changes */}
+                    <div key={lang} style={{ flex:1 }}>{children}</div>
                 </main>
             </div>
         </LangContext.Provider>
