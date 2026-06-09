@@ -2,6 +2,8 @@ import { Head, Link } from "@inertiajs/react";
 import AppLayout, { useLang } from "./AppLayout";
 import { useState, useEffect } from "react";
 
+
+
 const T = {
     fr: {
         title:"Tableau de bord",
@@ -252,7 +254,7 @@ const s = {
     page:{ maxWidth:"1100px", margin:"0 auto", padding:"2rem 1.25rem 4rem", fontFamily:"'DM Sans',sans-serif" },
     flash:{ background:"#ECFDF5", border:"1px solid #A7F3D0", color:"#065F46", borderRadius:"10px", padding:"11px 16px", fontSize:"13px", marginBottom:"1.5rem" },
     header:{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", flexWrap:"wrap", gap:"1rem", marginBottom:"1.75rem" },
-    greeting:{ fontSize:"26px", fontWeight:800, color:"#111827", margin:"0 0 4px", letterSpacing:"-0.02em" },
+    greeting:{ fontSize:"26px", fontWeight:800, color:"#b5b7bce4", margin:"0 0 4px", letterSpacing:"-0.02em" },
     date:{ fontSize:"14px", color:"#9CA3AF", margin:0, textTransform:"capitalize" },
     genBtn:{ display:"inline-flex", alignItems:"center", gap:"6px", padding:"10px 18px", background:"#4F46E5", color:"#fff", borderRadius:"10px", fontSize:"13px", fontWeight:600, textDecoration:"none" },
     statsRow:{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))", gap:"12px", marginBottom:"1.75rem" },

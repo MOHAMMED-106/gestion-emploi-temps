@@ -35,6 +35,7 @@ class ExportController extends Controller
             'preferences'    => $preferences,
             'user'           => $user,
         ]);
+
     }
 
     /**

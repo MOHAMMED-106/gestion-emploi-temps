@@ -16,6 +16,9 @@ use Inertia\Inertia;
 |--------------------------------------------------------------------------
 */
 
+
+
+
 // Route d'accueil
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -98,6 +101,11 @@ Route::get('/statistics', [StatisticsController::class, 'index'])->name('statist
     Route::get('/export',       [ExportController::class, 'index'])->name('export.index');
     Route::get('/export/pdf',   [ExportController::class, 'exportPdf'])->name('export.pdf');
     Route::get('/export/excel', [ExportController::class, 'exportExcel'])->name('export.excel');
+    // FOR PRINT VIEW 6
+  
+
+    Route::get('/export/print/{id}', [ExportController::class, 'printView'])->name('export.print');
+
 
     // ── Plannings ───────────────────────────────────────────
     Route::get('/schedules',              [ScheduleGeneratorController::class, 'index'])->name('schedules.index');
