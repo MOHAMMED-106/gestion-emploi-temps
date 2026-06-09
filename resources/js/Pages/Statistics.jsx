@@ -155,16 +155,16 @@ export default function Statistics({ schedules = [], fixedEvents = [], user }) {
   const resume = activeSchedule?.schedule?.resume ?? {};
 
   // Hours per day
-  const hoursPerDay = jours.map((jour, idx) => {
-    const dayKey = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][idx];
+ const hoursPerDay = jours.map((jour, idx) => {
+    const dayKey = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"][idx];
     const dayDetails = details[dayKey] ?? {};
     return {
-      day: jour.slice(0, 3),
-      hours: dayDetails.total_heures_etude ?? 0,
-      sessions: (dayDetails.sessions_etude ?? []).length,
-      cours: (dayDetails.cours_fixes ?? []).length,
+        day: jour.slice(0, 3),
+        hours: dayDetails.total_heures_etude ?? 0,
+        sessions: (dayDetails.sessions_etude ?? []).length,
+        cours: (dayDetails.cours_fixes ?? []).length,
     };
-  });
+});
 
   const maxHours = Math.max(...hoursPerDay.map((d) => d.hours), 1);
   const bestDay = hoursPerDay.reduce((a, b) => (a.hours > b.hours ? a : b), hoursPerDay[0]);
@@ -178,7 +178,7 @@ export default function Statistics({ schedules = [], fixedEvents = [], user }) {
 
   const subjectMap = {};
   jours.forEach((_, idx) => {
-    const dayKey = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][idx];
+    const dayKey =["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"][idx];
     (details[dayKey]?.sessions_etude ?? []).forEach((sess) => {
       const raw = sess.matiere ?? "";
       const name = raw.replace(/^[🎯📖📚]\s*[^:]*:\s*/, "").trim();
